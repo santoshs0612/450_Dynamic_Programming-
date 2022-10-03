@@ -1,0 +1,142 @@
+
+Given a rod of length N inches and an array of prices, price[]. pricei denotes the value of a piece of length i. Determine the maximum value obtainable by cutting up the rod and selling the pieces.
+
+ 
+
+Example 1:
+
+Input:
+N = 8
+Price[] = {1, 5, 8, 9, 10, 17, 17, 20}
+Output:
+22
+Explanation:
+The maximum obtainable value is 22 by
+cutting in two pieces of lengths 2 and 
+6, i.e., 5+17=22.
+Example 2:
+
+Input:
+N=8
+Price[] = {3, 5, 8, 9, 10, 17, 17, 20}
+Output: 24
+Explanation: 
+The maximum obtainable value is 
+24 by cutting the rod into 8 pieces 
+of length 1, i.e, 8*3=24. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Solution{
+  public:
+  int solver_rec(int price[],vector<int> &length,int n,int ln)
+  {
+      if(n<=0 || ln<=0)
+      {
+          return 0;
+      }
+      
+      if(length[n-1]<=ln)
+      {
+          return max(price[n-1]+solver_rec(price,length,n,ln-length[n-1]),solver_rec(price,length,n-1,ln));
+      }
+      else 
+      {
+          return solver_rec(price,length,n-1,ln);
+      }
+  }
+  int solver_Memo(int price[],vector<int> &length,int n,int ln,vector<vector<int>> &dp)
+  {
+      if(n<=0 || ln<=0)
+      {
+          return 0;
+      }
+      if(dp[n][ln]!=-1)
+      {
+          return dp[n][ln];
+      }
+      if(length[n-1]<=ln)
+      {
+          return dp[n][ln]=max(price[n-1]+solver_Memo(price,length,n,ln-length[n-1],dp),solver_Memo(price,length,n-1,ln,dp));
+      }
+      else 
+      {
+          return dp[n][ln]=solver_Memo(price,length,n-1,ln,dp);
+      }
+  }
+
+    int cutRod(int price[], int n) {
+        //code here
+        
+        vector<int> length(n);
+        int i=0;
+        for(i=0;i<n;i++)
+        {
+            length[i]=i+1;
+        }
+        /////////
+        // For recurrsive Solution 
+        //////////
+        //return solver_rec(price,length,n,n);
+        /////////
+        //Memorization 
+        /////////
+        // vector<vector<int>> dp(n+1,vector<int>(n+1,-1));
+        // solver_Memo(price,length,n,n,dp);
+        // return dp[n][n];
+        
+        //////////
+        //Top Down Approach 
+        /////////
+        vector<vector<int>> dp(n+1,vector<int>(n+1));
+        
+        // initialization 
+        
+        for(int i=0;i<n+1;i++)
+        {
+            for(int j=0;j<n+1;j++)
+            {
+                if(i==0|| j==0)
+                {
+                    dp[i][j]=0;
+                }
+            }
+        }
+        
+        // main logic 
+        
+        for(int i=1;i<n+1;i++)
+        {
+            for(int j=1;j<n+1;j++)
+            {
+                if(length[i-1]<=j)
+                {
+                    dp[i][j]= max(price[i-1]+dp[i][j-length[i-1]],dp[i-1][j]);
+                }
+                else
+                {
+                    dp[i][j]= dp[i-1][j];
+                }
+            }
+            
+            
+        }
+        return dp[n][n];
+    
+
+        
+    }
+};
