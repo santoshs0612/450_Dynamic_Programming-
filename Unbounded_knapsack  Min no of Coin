@@ -1,0 +1,178 @@
+Given a value V and array coins[] of size M, the task is to make the change for V cents, given that you have an infinite supply of each of coins{coins1, coins2, ..., coinsm} valued coins. Find the minimum number of coins to make the change. If not possible to make change then return -1.
+
+
+Example 1:
+
+Input: V = 30, M = 3, coins[] = {25, 10, 5}
+Output: 2
+Explanation: Use one 25 cent coin
+and one 5 cent coin
+Example 2:
+Input: V = 11, M = 4,coins[] = {9, 6, 5, 1} 
+Output: 2 
+Explanation: Use one 6 cent coin
+and one 5 cent coin
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public:
+	int solver_Rec(int coins[],int T,int ind)
+	{
+	    if(ind==0)
+	    {
+	        if(T%coins[0]==0)
+	        {
+	            return T/coins[0];
+	        }
+	        else 
+	        {
+	            return 1e9;
+	        }
+	    }
+	    
+	    if(coins[ind]<=T)
+	    {
+	        return min(1+solver_Rec(coins,T-coins[ind],ind),solver_Rec(coins,T,ind-1));
+	    }
+	   else 
+	   {
+	       return solver_Rec(coins,T,ind-1);
+	   }
+
+	    
+	}
+	int solver_Mem(int coins[],int T,int ind,vector<vector<int>> &dp)
+	{
+	    if(ind==0)
+	    {
+	        if(T%coins[0]==0)
+	        {
+	            return T/coins[0];
+	        }
+	        else 
+	        {
+	            return 1e9;
+	        }
+	    }
+	    
+	    if(dp[ind][T]!=-1){
+	        return dp[ind][T];
+	    }
+	    if(coins[ind]<=T)
+	    {
+	        return dp[ind][T]=min(1+solver_Mem(coins,T-coins[ind],ind,dp),solver_Mem(coins,T,ind-1,dp));
+	    }
+	   else 
+	   {
+	       return dp[ind][T]=solver_Mem(coins,T,ind-1,dp);
+	   }
+
+	    
+	}
+	int minCoins(int coins[], int M, int V) 
+	{ 
+	    // Your code goes here
+	    
+	    //////////////////
+	    // Recurrsive Solutions 
+	    //////////////////
+	   // int ans  =solver_Rec(coins,V,M-1);
+	   // if(ans>=1e9)
+	   // {
+	   //     return -1;
+	   // }
+	   // else 
+	   // {
+	   //     return ans;
+	   // }
+	   
+	   ///////////////////
+	   //Memorization 
+	   //////////////////
+	   //vector<vector<int>> dp(M+1,vector<int>(V+1,-1));
+	   // int ans  =solver_Mem(coins,V,M-1,dp);
+	   // if(ans>=1e9)
+	   // {
+	   //     return -1;
+	   // }
+	   // else 
+	   // {
+	   //     return ans;
+	   // }
+	   
+	   ////////////////////
+	   // Top Down Approach 
+	   ////////////////////
+	   vector<vector<int>> dp(M+1,vector<int>(V+1,0));
+	   
+	   
+	   
+	   // Initialization 
+	   //for(int i=0;i<M+1;i++)
+	   //{
+	   //    for(int j=0;j<V+1;j++)
+	   //    {
+	   //        if(i==0)
+	   //        {
+	   //            dp[i][j]=1e9;
+	   //        }
+	   //        if(j==0)
+	   //        {
+	   //            dp[i][j]=0;
+	   //        }
+	   //    }
+	   //}
+	   //dp[0][0]= 1e9;
+	   
+	   for(int j=0;j<V+1;j++)
+	   {
+	       if(j%coins[0]==0){
+	           dp[0][j]=j/coins[0];
+	       }
+	       else
+	       {
+	           dp[0][j]=1e9;
+	       }
+	   }
+	   
+	   for(int i=1;i<M+1;i++)
+	   {
+	       for(int j=0;j<V+1;j++)
+	       {
+	           if(coins[i-1]<=j)
+	           {
+	               dp[i][j]=min(dp[i][j-coins[i-1]]+1,dp[i-1][j]);
+	           }
+	           else
+	           {
+	               dp[i][j]= dp[i-1][j];
+	           }
+	       }
+	   }
+	   int ans = dp[M][V];
+	    if(ans>=1e9)
+	    {
+	        return -1;
+	    }
+	    else 
+	    {
+	        return ans;
+	    }
+	   
+	   
+	   
+	} 
+	  
+};
