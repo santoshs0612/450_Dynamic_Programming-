@@ -1,0 +1,156 @@
+Given a string str, a partitioning of the string is a palindrome partitioning if every sub-string of the partition is a palindrome. Determine the fewest cuts needed for palindrome partitioning of the given string.
+
+
+Example 1:
+
+Input: str = "ababbbabbababa"
+Output: 3
+Explaination: After 3 partitioning substrings 
+are "a", "babbbab", "b", "ababa".
+Example 2:
+
+Input: str = "aaabba"
+Output: 1
+Explaination: The substrings after 1
+partitioning are "aa" and "abba".
+
+
+
+class Solution{
+public:
+    bool isPalindrome(string str, int i, int j)
+    {
+        while(i<j)
+        {
+            if(str[i]!=str[j])
+            {
+                return false;
+            }
+            i++;
+            j--;
+        }
+        return true;
+    }
+    int solver_Rec(string str,int i, int j)
+    {
+        if(i>=j)
+        {
+            return 0;
+        }
+        
+        if(isPalindrome(str,i,j)==true)
+        {
+            return 0;
+        }
+        int mini= INT_MAX;
+        for(int k= i;k<=j-1;k++)
+        {
+            int temp = solver_Rec(str,i,k)+solver_Rec(str,k+1,j)+1;
+            mini = min(temp,mini);
+            
+        }
+        return mini;
+    }
+    int solver_Mem(string str,int i, int j,vector<vector<int>> &dp)
+    {
+        if(i>=j)
+        {
+            return 0;
+        }
+        
+        if(isPalindrome(str,i,j)==true)
+        {
+            return 0;
+        }
+        if(dp[i][j]!=-1)
+        {
+            return dp[i][j];
+        }
+        int mini= INT_MAX;
+        for(int k= i;k<=j-1;k++)
+        {
+            int temp = solver_Mem(str,i,k,dp)+solver_Mem(str,k+1,j,dp)+1;
+            mini = min(temp,mini);
+            
+        }
+        return dp[i][j]=mini;
+    }
+
+    int solver_Mem_opt(string str,int i, int j,vector<vector<int>> &dp)
+    {
+        if(i>=j)
+        {
+            return 0;
+        }
+        
+        if(isPalindrome(str,i,j)==true)
+        {
+            return 0;
+        }
+        if(dp[i][j]!=-1)
+        {
+            return dp[i][j];
+        }
+        int mini= INT_MAX;
+        int left=0,right=0;
+        for(int k= i;k<=j-1;k++)
+        {
+            //int temp = solver_Mem_opt(str,i,k,dp)+solver_Mem_opt(str,k+1,j,dp)+1;
+            
+            if(dp[i][k]!=-1)
+            {
+                left= dp[i][k];
+            }
+            else
+            {
+                left= solver_Mem_opt(str,i,k,dp);
+                dp[i][k]=left;
+            }
+            if(dp[k+1][j]!=-1)
+            {
+                right= dp[k+1][j];
+            }
+            else
+            {
+                right= solver_Mem_opt(str,k+1,j,dp);
+                dp[k+1][j]=right;
+            }
+            int temp = left+right+1;
+            mini = min(temp,mini);
+            
+        }
+        return dp[i][j]=mini;
+    }
+    int palindromicPartition(string str)
+    {
+        // code here
+        
+        //////////////////////////
+        // Recursion 
+        /////////////////////////
+        
+        // int n = str.length();
+        
+        // return solver_Rec(str,0,n-1);
+        
+        /////////////////////////
+        // Meorization without Optimization 
+        ////////////////////////
+        
+        // int n = str.length();
+        // vector<vector<int>> dp(n+1,vector<int> (n+1,-1));
+        
+        // return solver_Mem(str,0,n-1,dp);
+        
+        //////////////////////////////
+        // Memorization with Optimization
+        ////////////////////////////
+        int n = str.length();
+        vector<vector<int>> dp(n+1,vector<int> (n+1,-1));
+        
+        return solver_Mem_opt(str,0,n-1,dp);        
+        
+        
+        
+    }
+};
