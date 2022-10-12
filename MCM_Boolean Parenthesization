@@ -1,0 +1,115 @@
+Given a boolean expression S of length N with following symbols.
+Symbols
+    'T' ---> true
+    'F' ---> false
+and following operators filled between symbols
+Operators
+    &   ---> boolean AND
+    |   ---> boolean OR
+    ^   ---> boolean XOR
+Count the number of ways we can parenthesize the expression so that the value of expression evaluates to true.
+
+ 
+
+Example 1:
+
+Input: N = 7
+S = T|T&F^T
+Output: 4
+Explaination: The expression evaluates 
+to true in 4 ways ((T|T)&(F^T)), 
+(T|(T&(F^T))), (((T|T)&F)^T) and (T|((T&F)^T)).
+Example 2:
+
+Input: N = 5
+S = T^F|F
+Output: 2
+Explaination: ((T^F)|F) and (T^(F|F)) are the 
+only ways.
+
+
+
+
+
+
+
+
+
+class Solution{
+public:
+    int solver_Rec(string S, int i,int j,int isTrue,vector<vector<vector<int>>> &dp)
+    {
+        if(i>j)
+        {
+            return 0;
+        }
+        
+        if(i==j)
+        {
+            if(isTrue)
+            {
+                return S[i]=='T';
+            }
+            else 
+            {
+                return S[i]=='F';
+            }
+        }
+        if(dp[i][j][isTrue]!=-1)
+        {
+            return dp[i][j][isTrue];
+        }
+        
+        int ways =0;
+        for(int k=i+1;k<=j-1;k=k+2)
+        {
+            int lT= solver_Rec(S,i,k-1,1,dp);
+            int lF= solver_Rec(S,i,k-1,0,dp);
+            int rT= solver_Rec(S,k+1,j,1,dp);
+            int rF= solver_Rec(S,k+1,j,0,dp);
+            
+            
+            if(S[k]=='&')
+            {
+                if(isTrue)
+                {
+                    ways=ways+(lT*rT);
+                }
+                else
+                {
+                    ways= ways+(lT*rF)+(lF*rT)+(lF*rF);
+                }
+            }
+            
+            else if(S[k]=='|')
+            {
+                if(isTrue)
+                {
+                    ways=ways+(lT*rF)+(lT*rT)+(lF*rT);
+                }
+                else
+                {
+                    ways=ways+(lF*rF);
+                }
+            }
+            else
+            {
+                if(isTrue)
+                {
+                    ways= ways+(lT*rF)+(rT*lF);
+                }
+                else
+                {
+                    ways= ways+(lT*rT)+(rF*lF);
+                }
+            }
+            
+        }
+        return dp[i][j][isTrue]=ways%1003;
+    }
+    int countWays(int N, string S){
+        // code here
+        vector<vector<vector<int>>> dp(N,vector<vector<int>>(N,vector<int>(2,-1)));
+        return solver_Rec(S,0,N-1,1,dp);
+    }
+};
