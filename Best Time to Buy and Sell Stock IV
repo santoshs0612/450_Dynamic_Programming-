@@ -1,0 +1,265 @@
+You are given an integer array prices where prices[i] is the price of a given stock on the ith day, and an integer k.
+
+Find the maximum profit you can achieve. You may complete at most k transactions.
+
+Note: You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
+
+ 
+
+Example 1:
+
+Input: k = 2, prices = [2,4,1]
+Output: 2
+Explanation: Buy on day 1 (price = 2) and sell on day 2 (price = 4), profit = 4-2 = 2.
+Example 2:
+
+Input: k = 2, prices = [3,2,6,5,0,3]
+Output: 7
+Explanation: Buy on day 2 (price = 2) and sell on day 3 (price = 6), profit = 6-2 = 4. Then buy on day 5 (price = 0) and sell on day 6 (price = 3), profit = 3-0 = 3.
+
+
+
+class Solution {
+public:
+    int solver_Rec(int ind,int buy,int cap,vector<int>&prices,int n)
+    {
+        if(ind==n)
+        {
+            return 0;
+        }
+        if(cap==0)
+        {
+            return 0;
+        }
+        
+        if(buy)
+        {
+            return max(-prices[ind]+solver_Rec(ind+1,0,cap,prices,n),0+solver_Rec(ind+1,1,cap,prices,n));
+        }
+        else 
+        {
+            return max(prices[ind]+solver_Rec(ind+1,1,cap-1,prices,n),solver_Rec(ind+1,0,cap,prices,n));
+        }
+    }
+
+    ///// new way
+    int solver_Rec_new(int ind,int tranNo,int k,vector<int>&prices,int n)
+    {
+        if(ind==n || tranNo==2*k)
+        {
+            return 0;
+        }
+        if(tranNo%2==0)
+        {
+            return max(-prices[ind]+solver_Rec_new(ind+1,tranNo+1,k,prices,n),0+solver_Rec_new(ind+1,tranNo,k,prices,n));
+        }
+        else 
+        {
+            return max(prices[ind]+solver_Rec_new(ind+1,tranNo+1,k,prices,n),solver_Rec_new(ind+1,tranNo,k,prices,n));
+        }
+    }
+    
+    
+////// Memorization 
+    int solver_Mem(int ind,int buy,int cap,vector<int>&prices,int n,
+                  vector<vector<vector<int>>> &dp)
+    {
+        if(ind==n)
+        {
+            return 0;
+        }
+        if(cap==0)
+        {
+            return 0;
+        }
+        if(dp[ind][buy][cap]!=-1)
+        {
+            return  dp[ind][buy][cap];
+        }
+        if(buy)
+        {
+            return 
+               dp[ind][buy][cap]= max(-prices[ind]+solver_Rec(ind+1,0,cap,prices,n),0+solver_Rec(ind+1,1,cap,prices,n));
+        }
+        else 
+        {
+            return dp[ind][buy][cap]=max(prices[ind]+solver_Rec(ind+1,1,cap-1,prices,n),solver_Rec(ind+1,0,cap,prices,n));
+        }
+    }
+
+        ///// new way
+    int solver_Mem_new(int ind,int tranNo,int k,vector<int>&prices,int n,vector<vector<int>> &dp)
+    {
+        if(ind==n || tranNo==2*k)
+        {
+            return 0;
+        }
+        if(dp[ind][tranNo]!=-1)
+        {
+            return dp[ind][tranNo];
+        }
+        if(tranNo%2==0)
+        {
+            return dp[ind][tranNo]=max(-prices[ind]+solver_Mem_new(ind+1,tranNo+1,k,prices,n,dp),0+solver_Mem_new(ind+1,tranNo,k,prices,n,dp));
+        }
+        else 
+        {
+            return dp[ind][tranNo]=max(prices[ind]+solver_Mem_new(ind+1,tranNo+1,k,prices,n,dp),solver_Mem_new(ind+1,tranNo,k,prices,n,dp));
+        }
+    }
+    
+    
+    int maxProfit(int k, vector<int>& prices) {
+        
+        
+        
+        ///////////////////////////////
+        // Reccursion 
+        //////////////////////////////
+        
+//         int n = prices.size();
+//         return solver_Rec(0,1,k,prices,n);
+        
+        ///////////////////////////////
+        // Memorization 
+        //////////////////////////////
+//         int n = prices.size();
+//         vector<vector<vector<int>>> dp(n, vector<vector<int>>(2,vector<int>(k+1,-1)));
+        
+//         return solver_Mem(0,1,k,prices,n,dp);
+        
+        
+        
+        ///////////////////////////////////////
+        // Tabulation 
+        //////////////////////////////////////
+//         int n = prices.size();
+//         vector<vector<vector<int>>> dp(n+1,vector<vector<int>>(2,vector<int>(k+1,0)));
+        
+        
+//         for(int ind=n-1;ind>=0;ind--)
+//         {
+//             for(int buy=0;buy<=1;buy++)
+//             {
+//                 for(int cap=1;cap<=k;cap++)
+//                 {
+//                     if(buy)
+//                         {
+//                         dp[ind][buy][cap]= max(-prices[ind]+                                                                                         dp[ind+1][0][cap],                                           0+dp[ind+1][1][cap]);
+//                         }
+//                         else 
+//                         {
+//                         dp[ind][buy][cap]=max(prices[ind]+
+//                                               dp[ind+1][1][cap-1],
+//                                               dp[ind+1][0][cap]);
+//                         }
+//                 }
+//             }
+//         }
+//         return dp[0][1][k];
+        
+        
+        ///////////////////////////////
+        // Tabulation Optimized 
+        //////////////////////////////
+        
+//         int n = prices.size();
+//         vector<vector<int>> after(2,vector<int>(k+1,0));
+//         vector<vector<int>> curr(2,vector<int>(k+1,0));
+        
+        
+//         for(int ind=n-1;ind>=0;ind--)
+//         {
+//             for(int buy=0;buy<=1;buy++)
+//             {
+//                 for(int cap=1;cap<=k;cap++)
+//                 {
+//                     if(buy)
+//                         {
+//                         curr[buy][cap]= max(-prices[ind]+after[0][cap],0+after[1][cap]);
+//                         }
+//                         else 
+//                         {
+//                         curr[buy][cap]=max(prices[ind]+
+//                                               after[1][cap-1],
+//                                               after[0][cap]);
+//                         }
+//                 }
+//             }
+            
+//             after= curr;
+//         }
+//         return after[1][k];
+        
+        
+        //////////////////////////////////////////
+        // New Method for this question 
+        //Recursion 
+        //////////////////////////////////////////
+        
+        // int n =prices.size();
+        // return solver_Rec_new(0,0,k,prices,n);
+        
+        //////////////////////////////////////
+        // Memoriation 
+        //////////////////////////////////////
+//         int n =prices.size();
+//         vector<vector<int>> dp(n, vector<int>(2*k,-1));
+        
+//         return solver_Mem_new(0,0,k,prices,n,dp);
+
+        
+        ////////////////////////////////
+        // Tabulation
+        ////////////////////////////////
+        
+//         int n= prices.size();
+//         vector<vector<int>> dp(n+1,vector<int>(2*k+1,0));
+        
+//         for(int ind=n-1;ind>=0;ind--)
+//         {
+//             for(int transNo=2*k-1;transNo>=0;transNo--)
+//             {
+                
+//                 if(transNo%2==0)
+//                 {
+//                     dp[ind][transNo]= max(-prices[ind]+dp[ind+1][transNo+1], 0+dp[ind+1][transNo]);
+//                 }
+//                 else
+//                 {
+//                     dp[ind][transNo]= max(prices[ind]+dp[ind+1][transNo+1], 0+dp[ind+1][transNo]);
+//                 }
+//             }
+//         }
+//         return dp[0][0];
+        
+        
+        
+        //////////////////////////////
+        // Optimized Tabulation 
+        ///////////////////////////////
+        int n= prices.size();
+        vector<int> after(2*k+1,0);
+        vector<int> curr(2*k+1,0);
+        
+        for(int ind=n-1;ind>=0;ind--)
+        {
+            for(int transNo=2*k-1;transNo>=0;transNo--)
+            {
+                
+                if(transNo%2==0)
+                {
+                    curr[transNo]= max(-prices[ind]+after[transNo+1], 0+after[transNo]);
+                }
+                else
+                {
+                    curr[transNo]= max(prices[ind]+after[transNo+1], 0+after[transNo]);
+                }
+            }
+            after= curr;
+        }
+        return after[0];
+        
+    }
+    
+};
