@@ -1,0 +1,183 @@
+Explanation Of Sample Input 1:
+For the first test case,
+One of the answers can be:
+On the first day, Ninja will learn new moves and earn 5 merit points. 
+On the second day, Ninja will do running and earn 3 merit points. 
+On the third day, Ninja will do fighting and earn 3 merit points. 
+The total merit point is 11 which is the maximum. 
+Hence, the answer is 11.
+
+For the second test case:
+One of the answers can be:
+On the first day, Ninja will learn new moves and earn 70 merit points. 
+On the second day, Ninja will do fighting and earn 50 merit points. 
+On the third day, Ninja will learn new moves and earn 90 merit points. 
+The total merit point is 210 which is the maximum. 
+Hence, the answer is 210.
+Sample Input 2:
+2
+3
+18 11 19
+4 13 7
+1 8 13
+2
+10 50 1
+5 100 11
+Sample Output 2:
+45
+110
+
+
+
+
+
+
+
+
+
+
+
+
+
+int solver_Rec(int day, int last_task,vector<vector<int>> &points)
+{
+    if(day==0)
+    {
+        int maxi=0;
+        for(int task=0;task<3;task++)
+        {
+            if(task!=last_task)
+            {
+                maxi= max(maxi, points[0][task]);
+            }          
+        }
+        return maxi;
+    }
+    int maxi=0;
+    for(int task =0;task<3;task++)
+    {
+        if(task!=last_task)
+        {
+            int point = points[day][task]+
+                solver_Rec(day-1,task,points);
+            maxi= max(maxi,point);
+        }
+    }
+    return maxi;
+}
+
+int solver_Mem(int day, int last_task,vector<vector<int>> &points,vector<vector<int>> &dp)
+{
+    if(day==0)
+    {
+        int maxi=0;
+        for(int task=0;task<3;task++)
+        {
+            if(task!=last_task)
+            {
+                maxi= max(maxi, points[0][task]);
+            }          
+        }
+        return maxi;
+    }
+    if(dp[day][last_task]!=-1)
+    {
+        return dp[day][last_task];
+    }
+    int maxi=0;
+    for(int task =0;task<3;task++)
+    {
+        if(task!=last_task)
+        {
+            int point = points[day][task]+
+                solver_Mem(day-1,task,points,dp);
+            maxi= max(maxi,point);
+        }
+    }
+    return dp[day][last_task]=maxi;
+}
+
+
+int ninjaTraining(int n, vector<vector<int>> &points)
+{
+    // Write your code here.
+    //////////////////////////////
+    // Recurssion 
+    ////////////////////////////
+    //return solver_Rec(n-1,3,points);
+    
+    
+   ///////////////////////////////
+    //Memorization 
+    /////////////////////////////
+    
+//     vector<vector<int>> dp(n,vector<int>(4,-1));
+    
+//     return solver_Mem(n-1,3,points,dp);
+    
+    
+    /////////////////////////////
+    // Tabulation(bottoms Up)
+    /////////////////////////////
+    
+    // Initailization 
+//     vector<vector<int>> dp(n, vector<int>(4,0));
+
+//     dp[0][0]= max(points[0][1],points[0][2]);
+//     dp[0][1]= max(points[0][0],points[0][2]);
+//     dp[0][2]= max(points[0][1],points[0][0]);
+//     dp[0][3]= max(points[0][0],max(points[0][1],points[0][2]));
+    
+//     for(int day=1;day<n;day++)
+//     {
+//         for(int last_task=0;last_task<4;last_task++)
+//         {
+//             int maxi=0;
+//             for(int task =0;task<3;task++)
+//             {
+//                 if(task!=last_task)
+//                 {
+//                     int point = points[day][task]+dp[day-1][task];
+//                     dp[day][last_task]= max(dp[day][last_task],point);
+//                 }
+//             }
+            
+//         }
+//     }
+    
+//     return dp[n-1][3];
+    
+    
+    /////////////////////////////
+    // Optimization 
+    ////////////////////////////
+    vector<int> prev(4,0);
+    prev[0]= max(points[0][1],points[0][2]);
+    prev[1]= max(points[0][0],points[0][2]);
+    prev[2]= max(points[0][1],points[0][0]);
+    prev[3]= max(points[0][0],max(points[0][1],points[0][2]));
+    
+    for(int day=1;day<n;day++)
+    {
+        vector<int> temp(4,0);
+        for(int last_task=0;last_task<4;last_task++)
+        {
+            temp[last_task]=0;
+            int maxi=0;
+            for(int task =0;task<3;task++)
+            {
+                if(task!=last_task)
+                {
+                    int point = points[day][task]+prev[task];
+                    temp[last_task]= max(temp[last_task],point);
+                }
+            }
+            
+        }
+        prev= temp;
+    }
+    
+    return prev[3];
+    
+    
+}
