@@ -1,0 +1,162 @@
+
+
+Given a A X B matrix with your initial position at the top-left cell, find the number of possible unique paths to reach the bottom-right cell of the matrix from the initial position.
+
+Note: Possible moves can be either down or right at any point in time, i.e., we can move to matrix[i+1][j] or matrix[i][j+1] from matrix[i][j].
+
+Example 1:
+
+Input:
+A = 2, B = 2
+Output: 2
+Explanation: There are only two unique
+paths to reach the end of the matrix of
+size two from the starting cell of the
+matrix.
+Example 2:
+
+Input:
+A = 3, B = 4
+Output: 10
+Explanation: There are only 10 unique
+paths to reach the end of the matrix of
+size two from the starting cell of the
+matrix.
+
+
+
+
+
+class Solution
+{
+    public:
+    int solver_Rec(int i,int j)
+    {
+        
+        if(i==0 && j==0)
+        {
+            return 1;
+        }
+        if(i<0 || j<0)
+        {
+            return 0;
+        }
+        
+        int up= solver_Rec(i-1,j);
+        int left= solver_Rec(i,j-1);
+        
+        return left+up;
+    }
+    int solver_Mem(int i,int j,vector<vector<int>> &dp)
+    {
+        
+        if(i==0 && j==0)
+        {
+            return 1;
+        }
+        if(i<0 || j<0)
+        {
+            return 0;
+        }
+        if(dp[i][j]!=-1)
+        {
+            return dp[i][j];
+        }
+        int up= solver_Mem(i-1,j,dp);
+        int left= solver_Mem(i,j-1,dp);
+        
+        return dp[i][j]=left+up;
+    }
+    //Function to find total number of unique paths.
+    int NumberOfPath(int a, int b)
+    {
+        //code here
+        ////////////////////////
+        // Recurssion 
+        ///////////////////////
+        
+        //return solver_Rec(a-1,b-1);
+        
+        
+        ///////////////////////
+        // Memorization 
+        //////////////////////
+        
+        // vector<vector<int>> dp(a,vector<int>(b,-1));
+        
+        // return solver_Mem(a-1,b-1,dp);
+        
+        ///////////////////////
+        // Tabulation Bottom Up
+        ///////////////////////
+        
+        // vector<vector<int>> dp(a,vector<int>(b,0));
+        
+        
+        // initialization
+        // base case
+        // dp[0][0]=1;
+        
+        // for(int i=0;i<a;i++)
+        // {
+        //     for(int j=0;j<b;j++)
+        //     {
+        //         if(i==0 && j==0)
+        //         {
+        //             dp[i][j]=1;
+        //         }
+        //         else{
+                
+        //         int up=0,left=0;
+        //         if(i>0)
+        //         {
+        //             up= dp[i-1][j];
+        //         }
+        //         if(j>0)
+        //         {
+        //             left= dp[i][j-1];
+        //         }
+        //         dp[i][j]= up+left;
+        //         }
+        //     }
+        // }
+        // return dp[a-1][b-1];
+        
+        //////////////////////
+        // Tabulation Space Optimization 
+        ///////////////////////
+
+        vector<int> prev(b,0);        
+        //initialization
+        
+        for(int i=0;i<a;i++)
+        {
+            vector<int> curr(b,0);
+            for(int j=0;j<b;j++)
+            {
+                if(i==0 && j==0)
+                {
+                    curr[j]=1;
+                }
+                else{
+                
+                int up=0,left=0;
+                if(i>0)
+                {
+                    up= prev[j];
+                }
+                if(j>0)
+                {
+                    left= curr[j-1];
+                }
+                curr[j]= up+left;
+                }
+            }
+            prev= curr;
+        }
+        return prev[b-1];
+        
+        
+        
+    }
+};
