@@ -1,0 +1,167 @@
+Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right, which minimizes the sum of all numbers along its path.
+
+Note: You can only move either down or right at any point in time.
+
+ 
+
+Example 1:
+
+Input: grid = [[1,3,1],[1,5,1],[4,2,1]]
+Output: 7
+
+Explanation: Because the path 1 → 3 → 1 → 1 → 1 minimizes the sum.
+Example 2:
+
+Input: grid = [[1,2,3],[4,5,6]]
+Output: 12
+
+
+
+
+
+
+class Solution {
+public:
+    
+    int solver_Rec(int i,int j, vector<vector<int>> &grid)
+    {
+        if(i==0 && j==0)
+        {
+            return  grid[i][j];
+        }
+        if(i<0 || j<0)
+        {
+            return 1e9;
+        }
+        
+        int left= grid[i][j]+solver_Rec(i,j-1,grid);
+        int up= grid[i][j]+solver_Rec(i-1,j,grid);
+        return min(left,up);
+    }
+    
+    int solver_Mem(int i,int j, vector<vector<int>> &grid,vector<vector<int>> &dp)
+    {
+        if(i==0 && j==0)
+        {
+            return  grid[i][j];
+        }
+        if(i<0 || j<0)
+        {
+            return 1e9;
+        }
+        if(dp[i][j]!=-1)
+        {
+            return  dp[i][j];
+        }
+        
+        int left= grid[i][j]+solver_Mem(i,j-1,grid,dp);
+        int up= grid[i][j]+solver_Mem(i-1,j,grid,dp);
+        return dp[i][j]=min(left,up);
+    }
+    int minPathSum(vector<vector<int>>& grid) {
+        
+        
+        int n = grid.size();
+        int m= grid[0].size();
+        
+        ////////////////////////
+        // Recursion 
+        ////////////////////////
+        
+        //return solver_Rec(n-1,m-1,grid);
+        
+        //////////////////////////
+        // Memorization
+        /////////////////////////
+        
+//         vector<vector<int>> dp(n,vector<int>(m,-1));
+        
+        
+//         return solver_Mem(n-1,m-1,grid,dp);
+        
+        //////////////////////////////
+        // Tabulation(Bottom up Approach)
+        /////////////////////////////
+        
+//         vector<vector<int>> dp(n,vector<int>(m,0));
+        
+//         dp[0][0]= grid[0][0];
+        
+//         for(int i=0;i<n;i++)
+//         {
+//             for(int j=0;j<m;j++)
+//             {
+//                 if(i==0 && j==0)
+//                 {
+//                     dp[i][j]= grid[i][j];
+//                 }
+//                 else 
+//                 {
+//                     int left=grid[i][j],up=grid[i][j];
+//                     if(i>0)
+//                     {
+//                         up+= dp[i-1][j];
+//                     }
+//                     else 
+//                     {
+//                         up+=1e9;
+//                     }
+//                     if(j>0)
+//                     {
+//                         left+= dp[i][j-1];
+//                     }
+//                     else 
+//                     {
+//                         left+=1e9;
+//                     }
+                    
+//                     dp[i][j]= min(left,up);
+//                 }
+//             }
+//         }
+//         return dp[n-1][m-1];
+        
+        ///////////////////////////////
+        // Tabulation Space Optimization 
+        /////////////////////////////////
+    
+        
+        vector<int> prev(m,0);
+        for(int i=0;i<n;i++)
+        {
+            vector<int> curr(m,0);
+            for(int j=0;j<m;j++)
+            {
+                if(i==0 && j==0)
+                {
+                    curr[j]= grid[i][j];
+                }
+                else
+                {
+                    int left=grid[i][j],up=grid[i][j];
+                    if(i>0)
+                    {
+                        up+= prev[j];
+                    }
+                    else 
+                    {
+                        up+=1e9;
+                    }
+                    if(j>0)
+                    {
+                        left+= curr[j-1];
+                    }
+                    else 
+                    {
+                        left+=1e9;
+                    }
+                    
+                    curr[j]= min(left,up);
+                }
+            }
+            prev= curr;
+        }
+        return prev[m-1];
+        
+    }
+};
