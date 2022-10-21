@@ -20,6 +20,59 @@ Subset2 = {4}, sum of Subset2 = 4
 
 
 
+// } Driver Code Ends
+class Solution{
+
+  public:
+	int minDifference(int arr[], int n)  { 
+	    // Your code goes here
+	    
+	    int totsum=0;
+	    for(int i=0;i<n;i++)
+	    {
+	        totsum+=arr[i];
+	    }
+	    int k= totsum;
+	    vector<bool> prev(k+1,0),curr(k+1,0);
+	    
+	    prev[0]=curr[0]= true;
+	    
+	    if(arr[0]<=k)
+	    {
+	        prev[arr[0]]=true;
+	    }
+	    
+	    for(int ind=1;ind<n;ind++)
+	    {
+	        for(int target=1;target<=k;target++)
+	        {
+	            bool not_take= prev[target];
+	            bool take = false;
+	            if(arr[ind]<=target)
+	            {
+	                take = prev[target-arr[ind]];
+	            }
+	            curr[target]= take|not_take;
+	        }
+	        prev= curr;
+	    }
+	    
+	    
+	    int mini=1e8;
+	    for(int s1=0;s1<=totsum/2;s1++)
+	    {
+	        if(prev[s1]==true)
+	        {
+	            mini= min(mini,abs(totsum-2*s1));
+	        }
+	    }
+	    return mini;
+	    
+	} 
+};
+
+
+
 //{ Driver Code Starts
 #include <bits/stdc++.h>
 using namespace std;
